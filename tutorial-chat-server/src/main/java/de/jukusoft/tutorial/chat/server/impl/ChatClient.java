@@ -121,7 +121,7 @@ public class ChatClient implements Client {
 
         JSONObject json = new JSONObject(str);
 
-        if (json.has("action") && json.getString("action").equals("auth") && json.has("username")) {
+        if (json.has("action") && json.getString("action").equals("auth") && json.has("username") && !json.getString("username").isEmpty()) {
             //get username
             String username = json.getString("username");
 
@@ -136,7 +136,7 @@ public class ChatClient implements Client {
             System.out.println("[Login] user " + this.clientID + " (" + this.username + ") logged in.");
 
             //send result
-            ChatMessage resMsg = ChatMessage.create(0, "system", "You are not logged in!");
+            ChatMessage resMsg = ChatMessage.create(0, "system", "You are logged in now.");
             JSONObject resJSON = resMsg.toJSON();
             resJSON.put("action", "auth_res");
             resJSON.put("res", "success");

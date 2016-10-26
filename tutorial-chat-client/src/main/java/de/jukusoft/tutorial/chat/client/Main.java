@@ -1,6 +1,8 @@
 package de.jukusoft.tutorial.chat.client;
 
 import de.jukusoft.tutorial.chat.client.impl.ChatClient;
+import de.jukusoft.tutorial.chat.client.message.ChatMessage;
+import io.vertx.core.buffer.Buffer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -43,6 +45,8 @@ public class Main {
                 //check, if authorization was successful.
                 if (!message.getResult().isEmpty() && message.getResult().equals("success")) {
                     System.out.println("[System] authorization successful!");
+
+                    startConsole(client, reader);
                 } else {
                     System.out.println("[System] authorization failed!");
 
@@ -76,41 +80,49 @@ public class Main {
             System.exit(0);
         }
 
-        /**
-        * console
-        */
+        System.out.println("Connecting...");
+    }
 
-        String line = "";
+    public static void startConsole (Client client, BufferedReader reader) {
+        //because this code blocks the event loop, we have to execute it in an own thread
+        Thread thread = new Thread(() -> {
+            String line = "";
 
-        System.out.println("You can submit messages with ENTER. Type /quit to close client.");
+            System.out.println("You can submit messages with ENTER. Type /quit to close client.");
 
-        while (true) {
-            System.out.print("> ");
-
-            try {
-                line = reader.readLine();
-            } catch (IOException e) {
-                e.printStackTrace();
-
-                continue;
-            }
-
-            if (line.equals("/quit")) {
-                System.out.println("close chat client now.");
+            while (true) {
+                System.out.print("> ");
 
                 try {
-                    //close client
-                    client.shutdown();
-                } catch (Exception e) {
+                    line = reader.readLine();
+                } catch (IOException e) {
                     e.printStackTrace();
+
+                    continue;
                 }
 
-                System.exit(0);
-            } else {
-                //its an chat message
-                client.sendMessageToServer(line);
+                if (line.equals("/quit")) {
+                    System.out.println("close chat client now.");
+
+                    try {
+                        //close client
+                        client.shutdown();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    System.exit(0);
+                } else {
+                    //its an chat message
+                    ChatMessage msg = ChatMessage.create(line);
+                    System.out.println("debug: " + msg.toJSON().toString());
+                    client.sendMessageToServer(msg.toJSON());
+                }
             }
-        }
+        });
+
+        //start thread
+        thread.start();
     }
 
 }

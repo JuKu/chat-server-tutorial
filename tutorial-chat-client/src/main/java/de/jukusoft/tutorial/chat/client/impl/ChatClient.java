@@ -110,6 +110,8 @@ public class ChatClient implements Client {
             String str = buffer.toString(StandardCharsets.UTF_8);
             JSONObject json = new JSONObject(str);
 
+            System.out.println("message received: " + str);
+
             //convert to chat message
             ChatMessage msg = ChatMessage.create(json);
 
@@ -131,9 +133,8 @@ public class ChatClient implements Client {
 
     @Override
     public void auth(String username) {
-        //create new chat message and convert to json string
-        ChatMessage msg = ChatMessage.create();
-        JSONObject json = msg.toJSON();
+        //create new json object
+        JSONObject json = new JSONObject();
         json.put("action", "auth");
         json.put("username", username);
 
@@ -150,13 +151,16 @@ public class ChatClient implements Client {
         //create new chat message
         ChatMessage msg = ChatMessage.create(text);
 
+        String str = msg.toJSON().toString();
+        System.out.println("sendMessageToServer: " + str);
+
         //send text
-        this.socket.write(msg.toJSON().toString());
+        this.socket.write(str);
     }
 
     @Override
     public void sendMessageToServer(JSONObject json) {
-
+        this.sendMessageToServer(json.toString());
     }
 
     @Override

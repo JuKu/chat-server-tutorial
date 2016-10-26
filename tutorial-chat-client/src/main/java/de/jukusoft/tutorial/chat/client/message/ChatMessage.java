@@ -88,6 +88,9 @@ public class ChatMessage {
         //add attributes
         json.put("action", "add_message");
         json.put("clientID", this.clientID);
+        json.put("username", this.username);
+        json.put("text", this.text);
+        json.put("res", this.res);
 
         return json;
     }
@@ -160,7 +163,7 @@ public class ChatMessage {
 
     public static ChatMessage create (String text) {
         //create new chat message
-        final ChatMessage msg = new ChatMessage();
+        ChatMessage msg = new ChatMessage();
 
         //set text
         msg.text = text;
