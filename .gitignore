@@ -13,6 +13,11 @@ hs_err_pid*
 
 # Created by https://www.gitignore.io/api/gradle,java,maven,eclipse,netbeans,intellij,windows,xilinxise,macos
 
+.idea
+*.idea
+.iml
+*.iml
+
 ### Maven ###
 target/
 pom.xml.tag
