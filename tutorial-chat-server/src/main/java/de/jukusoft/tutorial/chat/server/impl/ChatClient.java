@@ -148,6 +148,9 @@ public class ChatClient implements Client {
         if (!this.isAuthentificated()) {
             System.err.println("client " + this.clientID + " isnt authentificated, drop message now.");
 
+            //send error message to client
+            this.send(ChatMessage.create(0, "system", "You cannot send messages, because you arent logged in!").toJSON());
+
             return;
         }
 

@@ -31,6 +31,11 @@ public class ChatMessage {
     */
     protected String action = "add_message";
 
+    /**
+    * result string for actions
+    */
+    protected String res = "";
+
     protected ChatMessage () {
         //
     }
@@ -71,6 +76,15 @@ public class ChatMessage {
         return this.action;
     }
 
+    /**
+    * get result
+     *
+     * @return result
+    */
+    public String getResult () {
+        return this.res;
+    }
+
     public JSONObject toJSON () {
         //create new json object
         JSONObject json = new JSONObject();
@@ -78,6 +92,9 @@ public class ChatMessage {
         //add attributes
         json.put("action", "add_message");
         json.put("clientID", this.clientID);
+        json.put("username", this.username);
+        json.put("text", this.text);
+        json.put("res", this.res);
 
 
         return json;
@@ -89,6 +106,10 @@ public class ChatMessage {
 
         //parse message
         msg.text = json.getString("text");
+
+        if (json.has("res")) {
+            msg.res = json.getString("res");
+        }
 
         return msg;
     }
@@ -106,6 +127,10 @@ public class ChatMessage {
 
         if (json.has("text")) {
             msg.text = json.getString("text");
+        }
+
+        if (json.has("res")) {
+            msg.res = json.getString("res");
         }
 
         return msg;

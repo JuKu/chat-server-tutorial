@@ -27,6 +27,11 @@ public class ChatMessage {
     */
     protected String action = "add_message";
 
+    /**
+     * result string for actions
+     */
+    protected String res = "";
+
     protected ChatMessage () {
         //
     }
@@ -67,6 +72,15 @@ public class ChatMessage {
         return this.action;
     }
 
+    /**
+     * get result
+     *
+     * @return result
+     */
+    public String getResult () {
+        return this.res;
+    }
+
     public JSONObject toJSON () {
         //create new json object
         JSONObject json = new JSONObject();
@@ -74,7 +88,6 @@ public class ChatMessage {
         //add attributes
         json.put("action", "add_message");
         json.put("clientID", this.clientID);
-
 
         return json;
     }
@@ -84,7 +97,25 @@ public class ChatMessage {
         final ChatMessage msg = new ChatMessage();
 
         //parse message
-        msg.text = json.getString("text");
+        if (json.has("text")) {
+            msg.text = json.getString("text");
+        }
+
+        if (json.has("clientID")) {
+            msg.clientID = json.getLong("clientID");
+        }
+
+        if (json.has("username")) {
+            msg.username = json.getString("username");
+        }
+
+        if (json.has("action")) {
+            msg.action = json.getString("action");
+        }
+
+        if (json.has("res")) {
+            msg.res = json.getString("res");
+        }
 
         return msg;
     }
@@ -104,6 +135,14 @@ public class ChatMessage {
             msg.text = json.getString("text");
         }
 
+        if (json.has("action")) {
+            msg.action = json.getString("action");
+        }
+
+        if (json.has("res")) {
+            msg.res = json.getString("res");
+        }
+
         return msg;
     }
 
@@ -115,6 +154,23 @@ public class ChatMessage {
         msg.clientID = clientID;
         msg.username = username;
         msg.text = text;
+
+        return msg;
+    }
+
+    public static ChatMessage create (String text) {
+        //create new chat message
+        final ChatMessage msg = new ChatMessage();
+
+        //set text
+        msg.text = text;
+
+        return msg;
+    }
+
+    public static ChatMessage create () {
+        //create new chat message
+        final ChatMessage msg = new ChatMessage();
 
         return msg;
     }
