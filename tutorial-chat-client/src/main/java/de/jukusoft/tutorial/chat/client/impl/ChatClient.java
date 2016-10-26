@@ -110,7 +110,7 @@ public class ChatClient implements Client {
             String str = buffer.toString(StandardCharsets.UTF_8);
             JSONObject json = new JSONObject(str);
 
-            System.out.println("message received: " + str);
+            //System.out.println("message received: " + str);
 
             //convert to chat message
             ChatMessage msg = ChatMessage.create(json);
@@ -148,14 +148,8 @@ public class ChatClient implements Client {
             throw new IllegalStateException("Client isnt connected yet.");
         }
 
-        //create new chat message
-        ChatMessage msg = ChatMessage.create(text);
-
-        String str = msg.toJSON().toString();
-        System.out.println("sendMessageToServer: " + str);
-
         //send text
-        this.socket.write(str);
+        this.socket.write(text);
     }
 
     @Override
