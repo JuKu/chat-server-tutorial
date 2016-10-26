@@ -3,6 +3,7 @@ package de.jukusoft.tutorial.chat.server.impl;
 import de.jukusoft.tutorial.chat.server.Client;
 import de.jukusoft.tutorial.chat.server.Server;
 import de.jukusoft.tutorial.chat.server.message.ChatMessage;
+import de.jukusoft.tutorial.chat.server.message.MessageListener;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.VertxOptions;
@@ -46,6 +47,11 @@ public class ChatServer implements Server {
     */
     protected Map<Long,Client> clientMap = new ConcurrentHashMap<>();
 
+    /**
+    * instance of message listener
+    */
+    protected MessageListener messageReceiver = null;
+
     public static final String SERVER_VERSION = "1.0.0a";
 
     public ChatServer () {
@@ -61,7 +67,16 @@ public class ChatServer implements Server {
     }
 
     @Override
+    public void setMessageListener(MessageListener listener) {
+        this.messageReceiver = listener;
+    }
+
+    @Override
     public void start() throws Exception {
+        if (this.messageReceiver == null) {
+            throw new IllegalStateException("set message receiver first.");
+        }
+
         //create new vertx.io instance
         this.vertx = Vertx.vertx(this.vertxOptions);
 
@@ -125,7 +140,7 @@ public class ChatServer implements Server {
     */
     protected void addClient (NetSocket socket) {
         //create new client instance
-        ChatClient client = new ChatClient(socket);
+        ChatClient client = new ChatClient(socket, this.messageReceiver);
 
         //set close handler
         socket.closeHandler(v -> {

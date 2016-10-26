@@ -2,6 +2,7 @@ package de.jukusoft.tutorial.chat.server.impl;
 
 import de.jukusoft.tutorial.chat.server.Client;
 import de.jukusoft.tutorial.chat.server.message.ChatMessage;
+import de.jukusoft.tutorial.chat.server.message.MessageListener;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.net.NetSocket;
 import org.json.JSONObject;
@@ -40,8 +41,14 @@ public class ChatClient implements Client {
     */
     protected AtomicBoolean isAuthentificated = new AtomicBoolean(false);
 
-    public ChatClient (NetSocket socket) {
+    /**
+    * message receiver
+    */
+    protected MessageListener messageListener = null;
+
+    public ChatClient (NetSocket socket, MessageListener messageListener) {
         this.socket = socket;
+        this.messageListener = messageListener;
 
         //generate new clientID
         this.clientID = this.lastID.incrementAndGet();
@@ -156,7 +163,11 @@ public class ChatClient implements Client {
 
         log += ": " + message.getText();
 
+        //print log
         System.out.println(log);
+
+        //call message receiver
+        this.messageListener.messageReceived(this, message);
     }
 
     /**
@@ -164,13 +175,14 @@ public class ChatClient implements Client {
     */
     protected void sendWelcomeMessage () {
         //create new chat message
-        ChatMessage msg = ChatMessage.create(0, "system", "Welcome");
+        ChatMessage msg = ChatMessage.create(0, "system", "Welcome! Please enter your username!");
 
         //convert to JSON object
         JSONObject json = msg.toJSON();
 
         //add chat server version
         json.put("chatserver_version", ChatServer.SERVER_VERSION);
+        json.put("action", "request_auth");
 
         //send message
         this.send(json);
