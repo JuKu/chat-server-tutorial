@@ -98,6 +98,9 @@ public class ServerMain {
                         }
                     }
 
+                    //print text
+                    System.out.println(str);
+
                     break;
             }
         }

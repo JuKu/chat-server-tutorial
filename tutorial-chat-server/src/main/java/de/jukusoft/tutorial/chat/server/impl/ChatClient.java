@@ -57,6 +57,9 @@ public class ChatClient implements Client {
                 e.printStackTrace();
             }
         });
+
+        //send welcome message
+        this.sendWelcomeMessage();
     }
 
     @Override
@@ -97,10 +100,42 @@ public class ChatClient implements Client {
     protected void messageReceived (Buffer buffer) {
         //convert to string and json object
         String str = buffer.toString(StandardCharsets.UTF_8);
+
+        //remove whitespaces at begin and end
+        str = str.trim();
+
+        //check, if message is an json message
+        if (!str.startsWith("{") || !str.endsWith("}")) {
+            //no json message
+            System.err.println("imvalid json message: " + str);
+
+            return;
+        }
+
         JSONObject json = new JSONObject(str);
 
-        if (json.has("action")) {
-            //
+        if (json.has("action") && json.getString("action").equals("auth") && json.has("username")) {
+            //get username
+            String username = json.getString("username");
+
+            //set username
+            this.username = username;
+
+            //you can add right authorization here
+
+            //set authentification state
+            this.isAuthentificated.set(true);
+
+            System.out.println("[Login] user " + this.clientID + " (" + this.username + ") logged in.");
+
+            //send result
+            ChatMessage resMsg = ChatMessage.create(0, "system", "You are not logged in!");
+            JSONObject resJSON = resMsg.toJSON();
+            resJSON.put("action", "auth_res");
+            resJSON.put("res", "success");
+            this.send(resJSON);
+
+            return;
         }
 
         if (!this.isAuthentificated()) {
@@ -122,6 +157,23 @@ public class ChatClient implements Client {
         log += ": " + message.getText();
 
         System.out.println(log);
+    }
+
+    /**
+    * send welcome message to client
+    */
+    protected void sendWelcomeMessage () {
+        //create new chat message
+        ChatMessage msg = ChatMessage.create(0, "system", "Welcome");
+
+        //convert to JSON object
+        JSONObject json = msg.toJSON();
+
+        //add chat server version
+        json.put("chatserver_version", ChatServer.SERVER_VERSION);
+
+        //send message
+        this.send(json);
     }
 
 }

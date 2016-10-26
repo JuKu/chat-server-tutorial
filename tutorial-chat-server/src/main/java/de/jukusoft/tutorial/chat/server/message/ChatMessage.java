@@ -26,6 +26,11 @@ public class ChatMessage {
     */
     protected String text = "";
 
+    /**
+    * message action
+    */
+    protected String action = "add_message";
+
     protected ChatMessage () {
         //
     }
@@ -57,6 +62,15 @@ public class ChatMessage {
         return this.text;
     }
 
+    /**
+    * get action
+     *
+     * @return action
+    */
+    public String getAction () {
+        return this.action;
+    }
+
     public JSONObject toJSON () {
         //create new json object
         JSONObject json = new JSONObject();
@@ -69,6 +83,16 @@ public class ChatMessage {
         return json;
     }
 
+    public static ChatMessage create (JSONObject json) {
+        //create new chat message
+        final ChatMessage msg = new ChatMessage();
+
+        //parse message
+        msg.text = json.getString("text");
+
+        return msg;
+    }
+
     public static ChatMessage create (final long clientID, final String username, JSONObject json) {
         //create new chat message
         final ChatMessage msg = new ChatMessage();
@@ -78,7 +102,23 @@ public class ChatMessage {
         msg.username = username;
 
         //parse message
-        msg.text = json.getString("text");
+        msg.action = json.getString("action");
+
+        if (json.has("text")) {
+            msg.text = json.getString("text");
+        }
+
+        return msg;
+    }
+
+    public static ChatMessage create (final long clientID, final String username, String text) {
+        //create new chat message
+        final ChatMessage msg = new ChatMessage();
+
+        //set clientID and username
+        msg.clientID = clientID;
+        msg.username = username;
+        msg.text = text;
 
         return msg;
     }

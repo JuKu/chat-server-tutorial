@@ -46,6 +46,8 @@ public class ChatServer implements Server {
     */
     protected Map<Long,Client> clientMap = new ConcurrentHashMap<>();
 
+    public static final String SERVER_VERSION = "1.0.0a";
+
     public ChatServer () {
         //set number of threads
         this.vertxOptions.setEventLoopPoolSize(2);
