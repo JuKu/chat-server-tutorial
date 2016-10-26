@@ -115,7 +115,6 @@ public class Main {
                 } else {
                     //its an chat message
                     ChatMessage msg = ChatMessage.create(line);
-                    System.out.println("debug: " + msg.toJSON().toString());
                     client.sendMessageToServer(msg.toJSON());
                 }
             }
