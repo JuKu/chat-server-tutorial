@@ -172,4 +172,24 @@ public class ChatServer implements Server {
         }
     }
 
+    /**
+     * send broadcast message to all clients
+     *
+     * @param msg chat message
+     * @param withoutUser user which shouldnt receive this message to avoid that sender receives his own message
+     */
+    public void broadcastChatMessage (ChatMessage msg, long withoutUser) {
+        //convert to json object
+        JSONObject json = msg.toJSON();
+
+        //iterate through all clients
+        for (Map.Entry<Long,Client> entry : this.clientMap.entrySet()) {
+            //check first, if client is authentificated
+            if (entry.getValue().isAuthentificated() && entry.getKey() != withoutUser) {
+                //send message
+                entry.getValue().send(json);
+            }
+        }
+    }
+
 }

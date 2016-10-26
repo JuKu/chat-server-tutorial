@@ -1,6 +1,8 @@
 package de.jukusoft.tutorial.chat.server;
 
 import de.jukusoft.tutorial.chat.server.impl.ChatServer;
+import de.jukusoft.tutorial.chat.server.message.ChatMessage;
+import de.jukusoft.tutorial.chat.server.message.MessageListener;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -18,6 +20,12 @@ public class ServerMain {
 
         //set port
         server.setPort(2200);
+
+        //set message receiver
+        server.setMessageListener((Client client, ChatMessage message) -> {
+            //broadcast message to all other clients
+            server.broadcastChatMessage(message, client.getClientID());
+        });
 
         //start server
         try {
